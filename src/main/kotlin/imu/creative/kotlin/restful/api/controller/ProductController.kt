@@ -1,9 +1,6 @@
 package imu.creative.kotlin.restful.api.controller
 
-import imu.creative.kotlin.restful.api.model.CreateProductRequest
-import imu.creative.kotlin.restful.api.model.ProductResponse
-import imu.creative.kotlin.restful.api.model.UpdateProductRequest
-import imu.creative.kotlin.restful.api.model.WebResponse
+import imu.creative.kotlin.restful.api.model.*
 import imu.creative.kotlin.restful.api.service.ProductService
 import org.springframework.web.bind.annotation.*
 
@@ -59,6 +56,24 @@ class ProductController(val productService: ProductService) {
         val productResponse = productService.delete(id)
 
         return convertProductResponseToWebResponse("Delete Product Success", productResponse)
+    }
+
+    @GetMapping(
+        value = ["/api/products"],
+        produces = ["application/json"]
+    )
+    fun listProducts(
+        @RequestParam(value = "size", defaultValue = "10") size: Int,
+        @RequestParam(value = "page", defaultValue = "0") page: Int
+    ): WebResponse<List<ProductResponse>> {
+        val request = ListProductRequest(page, size)
+        val productResponse = productService.list(request)
+
+        return WebResponse(
+            code = 200,
+            status = "OK",
+            data = productResponse
+        )
     }
 
     private fun convertProductResponseToWebResponse(

@@ -4,15 +4,17 @@ import imu.creative.kotlin.restful.api.entity.Product
 import imu.creative.kotlin.restful.api.error.AlreadyExistException
 import imu.creative.kotlin.restful.api.error.NotFoundException
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
+import imu.creative.kotlin.restful.api.model.ListProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
 import imu.creative.kotlin.restful.api.model.UpdateProductRequest
 import imu.creative.kotlin.restful.api.repository.ProductRepository
 import imu.creative.kotlin.restful.api.service.ProductService
 import imu.creative.kotlin.restful.api.validation.ValidationUtil
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
-import javax.validation.ConstraintViolationException
+import java.util.stream.Collectors
 
 // productRepository dijadikan sebagai field => diberikan inisialisasi variable val
 @Service
@@ -87,6 +89,25 @@ class ProductServiceImpl(
 
         productRepository.delete(product)
         return convertProductToProductResponse(product)
+    }
+
+    override fun list(listProductRequest: ListProductRequest): List<ProductResponse> {
+        val page = productRepository.findAll(PageRequest.of(
+            listProductRequest.page,
+            listProductRequest.size
+        ))
+
+        println("page : ${page.number}")
+        println("size : ${page.size}")
+        println("total page in page ${page.number} : ${page.numberOfElements}")
+        println("total elements per page : ${page.totalPages}")
+        println("total elements : ${page.totalElements}")
+
+        val products: List<Product> = page.get().collect(Collectors.toList())
+
+        return products.map {
+            convertProductToProductResponse(it)
+        }
     }
 
     private fun findProductByIdOrThrowNotFound(id: String): Product {

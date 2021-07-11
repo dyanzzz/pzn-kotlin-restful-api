@@ -1,6 +1,7 @@
 package imu.creative.kotlin.restful.api.service
 
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
+import imu.creative.kotlin.restful.api.model.ListProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
 import imu.creative.kotlin.restful.api.model.UpdateProductRequest
 
@@ -20,4 +21,6 @@ interface ProductService {
     // void/ unit tanpa mereturn response,
     // biasakan jika id tidak ada, tinggal throw exception aja yg dihandle oleh controller exception
     fun delete(id: String): ProductResponse
+
+    fun list(listProductRequest: ListProductRequest): List<ProductResponse>
 }
