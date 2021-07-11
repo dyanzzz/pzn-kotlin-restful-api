@@ -2,6 +2,7 @@ package imu.creative.kotlin.restful.api.controller
 
 import imu.creative.kotlin.restful.api.error.AlreadyExistException
 import imu.creative.kotlin.restful.api.error.NotFoundException
+import imu.creative.kotlin.restful.api.error.UnAuthorizeException
 import imu.creative.kotlin.restful.api.model.WebResponse
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -35,6 +36,15 @@ class ErrorController {
             code = 404,
             status = "ALREADY EXIST",
             data = "Product ${ alreadyExistException.product.id } | ${ alreadyExistException.product.name } Already Exist"
+        )
+    }
+
+    @ExceptionHandler(value = [UnAuthorizeException::class])
+    fun unAuthorize(unAuthorizeException: UnAuthorizeException): WebResponse<String> {
+        return WebResponse(
+            code = 401,
+            status = "UNAUTHORIZED",
+            data = "Please put your x-api-key"
         )
     }
 }
