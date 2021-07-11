@@ -5,6 +5,7 @@ import imu.creative.kotlin.restful.api.error.AlreadyExistException
 import imu.creative.kotlin.restful.api.error.NotFoundException
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
+import imu.creative.kotlin.restful.api.model.UpdateProductRequest
 import imu.creative.kotlin.restful.api.repository.ProductRepository
 import imu.creative.kotlin.restful.api.service.ProductService
 import imu.creative.kotlin.restful.api.validation.ValidationUtil
@@ -16,6 +17,7 @@ import javax.validation.ConstraintViolationException
 // productRepository dijadikan sebagai field => diberikan inisialisasi variable val
 @Service
 class ProductServiceImpl(
+    // constructor
     val productRepository: ProductRepository,
     val validationUtil: ValidationUtil
     ) : ProductService {
@@ -62,6 +64,26 @@ class ProductServiceImpl(
         } else {
             return convertProductToProductResponse(product)
         }
+    }
+
+    override fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse {
+        // cek dulu, ada ga idnya
+        val product = productRepository.findByIdOrNull(id) ?: throw NotFoundException()
+
+        // sebelum mengeksekusi service/ tiap masuk service ini, akan melakukan validasi dulu
+        // jika ada masalah, maka akan throw ConstraintViolationException
+        validationUtil.validate(updateProductRequest)
+
+        // ubah nama, dan field lain mengikuti requestnya
+        product.apply {
+            name = updateProductRequest.name
+            price = updateProductRequest.price
+            quantity = updateProductRequest.quantity
+            updatedDate = Date()
+        }
+
+        productRepository.save(product)
+        return convertProductToProductResponse(product)
     }
 
     private fun convertProductToProductResponse(product: Product): ProductResponse {

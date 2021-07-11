@@ -2,6 +2,7 @@ package imu.creative.kotlin.restful.api.controller
 
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
+import imu.creative.kotlin.restful.api.model.UpdateProductRequest
 import imu.creative.kotlin.restful.api.model.WebResponse
 import imu.creative.kotlin.restful.api.service.ProductService
 import org.springframework.web.bind.annotation.*
@@ -28,6 +29,21 @@ class ProductController(val productService: ProductService) {
     )
     fun getProduct(@PathVariable("id") id: String): WebResponse<ProductResponse> {
         val productResponse = productService.get(id)
+
+        return convertProductResponseToWebResponse(productResponse)
+    }
+
+    @PutMapping(
+        value = ["/api/product/{id}"],
+        produces = ["application/json"],    // produces == response
+        consumes = ["application/json"]     // consumes == ada body dalam type json
+    )
+    fun updateProduct(
+        @PathVariable("id") id: String,
+        @RequestBody body: UpdateProductRequest
+    ): WebResponse<ProductResponse> {
+
+        val productResponse = productService.update(id, body)
 
         return convertProductResponseToWebResponse(productResponse)
     }

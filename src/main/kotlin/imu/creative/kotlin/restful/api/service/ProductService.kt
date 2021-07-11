@@ -2,6 +2,7 @@ package imu.creative.kotlin.restful.api.service
 
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
+import imu.creative.kotlin.restful.api.model.UpdateProductRequest
 
 // kenapa interface ?
 // interface by design
@@ -13,4 +14,6 @@ interface ProductService {
     fun create(createProductRequest: CreateProductRequest): ProductResponse
 
     fun get(id: String): ProductResponse
+
+    fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse
 }
