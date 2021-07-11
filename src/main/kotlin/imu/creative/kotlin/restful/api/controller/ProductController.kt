@@ -19,7 +19,7 @@ class ProductController(val productService: ProductService) {
     fun createProduct(@RequestBody body: CreateProductRequest): WebResponse<ProductResponse> {
         val productResponse = productService.create(body)
 
-        return convertProductResponseToWebResponse(productResponse)
+        return convertProductResponseToWebResponse("Save Product Success", productResponse)
     }
 
     // pathVariable => ketika menambahkan uri dengan id, maka id akan digunakan ke parameter function get product
@@ -30,7 +30,7 @@ class ProductController(val productService: ProductService) {
     fun getProduct(@PathVariable("id") id: String): WebResponse<ProductResponse> {
         val productResponse = productService.get(id)
 
-        return convertProductResponseToWebResponse(productResponse)
+        return convertProductResponseToWebResponse("OK", productResponse)
     }
 
     @PutMapping(
@@ -45,13 +45,29 @@ class ProductController(val productService: ProductService) {
 
         val productResponse = productService.update(id, body)
 
-        return convertProductResponseToWebResponse(productResponse)
+        return convertProductResponseToWebResponse("Update Product Success", productResponse)
     }
 
-    private fun convertProductResponseToWebResponse(productResponse: ProductResponse): WebResponse<ProductResponse> {
+    @DeleteMapping(
+        value = ["/api/product/{id}"],
+        produces = ["application/json"],    // produces == response
+    )
+    fun deleteProduct(
+        @PathVariable("id") id: String
+    ): WebResponse<ProductResponse> {
+
+        val productResponse = productService.delete(id)
+
+        return convertProductResponseToWebResponse("Delete Product Success", productResponse)
+    }
+
+    private fun convertProductResponseToWebResponse(
+        status: String,
+        productResponse: ProductResponse
+    ): WebResponse<ProductResponse> {
         return WebResponse(
             code = 200,
-            status = "OK",
+            status = status,
             data = productResponse
         )
     }

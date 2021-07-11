@@ -57,18 +57,13 @@ class ProductServiceImpl(
     }
 
     override fun get(id: String): ProductResponse {
-        // get id dari product repository
-        val product = productRepository.findByIdOrNull(id)
-        if (product == null) {
-            throw NotFoundException()
-        } else {
-            return convertProductToProductResponse(product)
-        }
+        val product = findProductByIdOrThrowNotFound(id)
+
+        return convertProductToProductResponse(product)
     }
 
     override fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse {
-        // cek dulu, ada ga idnya
-        val product = productRepository.findByIdOrNull(id) ?: throw NotFoundException()
+        val product = findProductByIdOrThrowNotFound(id)
 
         // sebelum mengeksekusi service/ tiap masuk service ini, akan melakukan validasi dulu
         // jika ada masalah, maka akan throw ConstraintViolationException
@@ -84,6 +79,24 @@ class ProductServiceImpl(
 
         productRepository.save(product)
         return convertProductToProductResponse(product)
+    }
+
+    override fun delete(id: String): ProductResponse {
+
+        val product = findProductByIdOrThrowNotFound(id)
+
+        productRepository.delete(product)
+        return convertProductToProductResponse(product)
+    }
+
+    private fun findProductByIdOrThrowNotFound(id: String): Product {
+        // get id dari product repository
+        val product = productRepository.findByIdOrNull(id)
+        if (product == null) {
+            throw NotFoundException()
+        } else {
+            return product
+        }
     }
 
     private fun convertProductToProductResponse(product: Product): ProductResponse {

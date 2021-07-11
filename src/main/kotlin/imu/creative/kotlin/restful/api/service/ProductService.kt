@@ -16,4 +16,8 @@ interface ProductService {
     fun get(id: String): ProductResponse
 
     fun update(id: String, updateProductRequest: UpdateProductRequest): ProductResponse
+
+    // void/ unit tanpa mereturn response,
+    // biasakan jika id tidak ada, tinggal throw exception aja yg dihandle oleh controller exception
+    fun delete(id: String): ProductResponse
 }
