@@ -1,13 +1,17 @@
 package imu.creative.kotlin.restful.api.service.impl
 
 import imu.creative.kotlin.restful.api.entity.Product
+import imu.creative.kotlin.restful.api.error.AlreadyExistException
+import imu.creative.kotlin.restful.api.error.NotFoundException
 import imu.creative.kotlin.restful.api.model.CreateProductRequest
 import imu.creative.kotlin.restful.api.model.ProductResponse
 import imu.creative.kotlin.restful.api.repository.ProductRepository
 import imu.creative.kotlin.restful.api.service.ProductService
 import imu.creative.kotlin.restful.api.validation.ValidationUtil
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.validation.ConstraintViolationException
 
 // productRepository dijadikan sebagai field => diberikan inisialisasi variable val
 @Service
@@ -34,8 +38,33 @@ class ProductServiceImpl(
         )
 
         // untuk menyimpan ke database lewat repository
-        productRepository.save(product)
+        val findProductByName = productRepository.findFirstByName(product.name)
+        val findProductById = productRepository.existsById(product.id)
 
+        println(findProductByName)
+
+        when {
+            (findProductById) || (findProductByName != null) -> {
+                throw AlreadyExistException(product)
+            }
+            else -> {
+                productRepository.save(product)
+                return convertProductToProductResponse(product)
+            }
+        }
+    }
+
+    override fun get(id: String): ProductResponse {
+        // get id dari product repository
+        val product = productRepository.findByIdOrNull(id)
+        if (product == null) {
+            throw NotFoundException()
+        } else {
+            return convertProductToProductResponse(product)
+        }
+    }
+
+    private fun convertProductToProductResponse(product: Product): ProductResponse {
         return ProductResponse(
             id = product.id,
             name = product.name,
