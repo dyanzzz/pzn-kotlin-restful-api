@@ -1,5 +1,12 @@
 <!--
     readme.md (markdown)
+
+PRnya
+- menambahkan informasi pageable di result response list
+- encode api_key from secret to encode
+- pelajari docker untuk :
+	- install postgres dengan docker
+	- membuat docker image untuk aplikasi rest api kotlin ini (pzn kotlin-restful-api -> 1:53:00)
 -->
 
 # API Spec Documentation Markdown
